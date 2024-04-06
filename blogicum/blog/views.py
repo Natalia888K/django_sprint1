@@ -1,5 +1,7 @@
 from django.shortcuts import render
 
+from django.http import Http404
+
 # from django.http import HttpResponse
 
 
@@ -46,6 +48,8 @@ posts = [
     },
 ]
 
+dict_for_id = {char['id']: char for char in posts}
+
 
 def index(request):
     """Главная страница сайта."""
@@ -54,10 +58,11 @@ def index(request):
     return render(request, template_name, context)
 
 
-def post_detail(request, id):
+def post_detail(request, post_id):
     """Функция выводит на страницу полный текст поста"""
-    dict_for_id = {char['id']: char for char in posts}
-    context = {'post': dict_for_id[id]}
+    if post_id not in dict_for_id:
+        raise Http404(f'Пост {post_id} ждет своего автора!')
+    context = {'post': dict_for_id[post_id]}
     template_name = 'blog/detail.html'
     return render(request, template_name, context)
 
